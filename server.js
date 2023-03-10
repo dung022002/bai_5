@@ -53,16 +53,16 @@ axios({
       //console.log(dimension.width, dimension.height) 
       let options = { width: 150 }
 
-      if (dimension.height > dimension.width) {
+      if (dimension.height > dimension.width) {             // so sanh chieu rong va cao cua anh
         options = { height: 150 }
       }
-      fs.readFile('img/' + file, async (err, data) => {
+      fs.readFile('img/' + file, async (err, data) => {     // doc file anh lay du lieu anh
         if (err) throw new Error('fs.readFile failed to read file')
-        const outputBuffer = await sharp(data).resize(options).toBuffer()
-        fs.writeFile('img/' + file, outputBuffer, () => {
-          console.log('old', dimension.width, dimension.height)
+        const outputBuffer = await sharp(data).resize(options).toBuffer()    // dua anh ve kich thuoc 150 
+        fs.writeFile('img/' + file, outputBuffer, () => {                    // ghi anh da sua vao trong thu muc img
+          console.log('old', dimension.width, dimension.height)              // in ra kich thuoc ban dau
           const newDimension = imageSize('img/' + file)
-          console.log('new', newDimension.width, newDimension.height) // Image width
+          console.log('new', newDimension.width, newDimension.height)        // in ra kich thuoc sau khi sua
           //console.log('Image resized sucessfully!')
         })
       })
