@@ -47,8 +47,8 @@ axios({
     )
   }
   const testFolder = 'img'
-  fs.readdir(testFolder, (err, files) => {
-    files.forEach(file => {
+  fs.readdir(testFolder, async (err, files) => {
+    files.forEach(async file => {
       const dimension = imageSize('img/' + file)
       //console.log(dimension.width, dimension.height) 
       let options = { width: 150 }
@@ -56,20 +56,25 @@ axios({
       if (dimension.height > dimension.width) {             // so sanh chieu rong va cao cua anh
         options = { height: 150 }
       }
-      fs.readFile('img/' + file, async (err, data) => {     // doc file anh lay du lieu anh
-        if (err) throw new Error('fs.readFile failed to read file')
+
+      try {
+        const data = fs.readFileSync('img/' + file)     // doc file anh lay du lieu anh
         const outputBuffer = await sharp(data).resize(options).toBuffer()    // dua anh ve kich thuoc 150 
-        fs.writeFile('img/' + file, outputBuffer, () => {                    // ghi anh da sua vao trong thu muc img
-          console.log('old', dimension.width, dimension.height)              // in ra kich thuoc ban dau
-          const newDimension = imageSize('img/' + file)
-          console.log('new', newDimension.width, newDimension.height)        // in ra kich thuoc sau khi sua
-          //console.log('Image resized sucessfully!')
-        })
-      })
+        fs.writeFileSync('img/' + file, outputBuffer)
+        console.log('old', dimension.width, dimension.height)              // in ra kich thuoc ban dau
+        const newDimension = imageSize('img/' + file)
+        // in ra kich thuoc sau khi sua
+        console.log('new', newDimension.width, newDimension.height)
+      } catch (err) {
+        console.log(err)
+      }
+
+
 
       if (!fs.existsSync('img-b-w')) {                   // kiem tra da ton tai thu muc de luu anh chua
         fs.mkdirSync('img-b-w')              // tao thu muc luu anh neu chua ton tai
       }
+      const dimension1 = imageSize('img/' + file)
       sharp('img/' + file)
         .greyscale() // make it greyscale
         .linear(1.5, 0) // increase the contrast
